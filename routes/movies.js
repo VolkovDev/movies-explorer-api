@@ -1,26 +1,21 @@
+/* eslint-disable import/extensions */
 const router = require('express').Router();
 const auth = require('../middlewares/auth');
 const {
-  getCards,
-  createCard,
-  deleteCard,
-  likeCard,
-  dislikeCard,
-} = require('../controllers/card');
+  getMovies,
+  createMovie,
+  deleteMovie,
+} = require('../controllers/movies');
 const {
-  validationCard,
-  validationCardId,
+  validateMovie,
+  validationDeleteMovie,
 } = require('../middlewares/celebrate');
 
-router.get('/movies', auth, getCards);
+router.get('/movies', auth, getMovies);
 
-router.post('/movies', auth, validationCard, createCard);
+router.post('/movies', auth, validateMovie, createMovie);
 
-router.delete('/movies/:movieId ', auth, validationCardId, deleteCard);
-
-// router.put('/cards/:cardId/likes', auth, validationCardId, likeCard);
-
-// router.delete('/cards/:cardId/likes', auth, validationCardId, dislikeCard);
+router.delete('/movies/:movieId ', auth, validationDeleteMovie, deleteMovie);
 
 module.exports = {
   router,

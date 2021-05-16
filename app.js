@@ -1,3 +1,4 @@
+/* eslint-disable import/extensions */
 /* eslint-disable no-console */
 const express = require('express');
 const mongoose = require('mongoose');
@@ -7,10 +8,10 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const cors = require('cors');
 const { errors } = require('celebrate');
-const { CelebrateError } = require('../../react-mesto-api-full/backend/middlewares/celebrate');
-const { requestLogger, errorLogger } = require('../../react-mesto-api-full/backend/middlewares/logger');
+const { CelebrateError } = require('./middlewares/celebrate');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 // const auth = require('./middlewares/auth');
-const NotFoundError = require('../../react-mesto-api-full/backend/errors/NotFoundError');
+const NotFoundError = require('./errors/NotFoundError');
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -55,12 +56,12 @@ app.get('/crash-test', () => {
   }, 0);
 });
 
-const usersRouter = require('../../react-mesto-api-full/backend/routes/user').router;
-const cardsRouter = require('../../react-mesto-api-full/backend/routes/card').router;
+const usersRouter = require('./routes/user').router;
+const movieRouter = require('./routes/movies').router;
 
 app.use(usersRouter);
 
-app.use(cardsRouter);
+app.use(movieRouter);
 
 app.use('*', () => {
   throw new NotFoundError('Запрашиваемый ресурс не найден');

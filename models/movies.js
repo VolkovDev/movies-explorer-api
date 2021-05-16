@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 
-const cardSchema = new mongoose.Schema({
-  country : {
+const movieSchema = new mongoose.Schema({
+  country: {
     type: String,
     required: true,
   },
-  director  : {
+  director: {
     type: String,
     required: true,
   },
@@ -66,4 +66,4 @@ const cardSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model('card', cardSchema);
+module.exports = mongoose.model('movie', movieSchema);

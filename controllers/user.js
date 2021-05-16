@@ -10,13 +10,6 @@ const BadRequestError = require('../errors/BadRequestError');
 
 const { JWT_SECRET, NODE_ENV } = process.env;
 
-// module.exports.getUsers = (req, res, next) => {
-//   User.find({})
-//     .orFail(new AuthorisationError('Необходимо авторизоваться'))
-//     .then((data) => res.status(200).send(data))
-//     .catch(next);
-// };
-
 module.exports.getUserMe = (req, res, next) => {
   User.findById(req.user._id)
     .orFail(new NotFoundError('Пользователь по указанному _id не найден!'))
@@ -24,27 +17,15 @@ module.exports.getUserMe = (req, res, next) => {
     .catch(next);
 };
 
-// module.exports.getUserById = (req, res, next) => {
-//   const userId = req.params.id;
-//   User.findById(userId)
-//     .orFail(new NotFoundError('Пользователь по указанному _id не найден'))
-//     .then((user) => res.status(200).send(user))
-//     .catch(next);
-// };
-
 module.exports.createUser = (req, res, next) => {
   const {
     name,
-    about,
-    avatar,
     email,
     password,
   } = req.body;
   bcrypt.hash(password, 10)
     .then((hash) => User.create({
       name,
-      about,
-      avatar,
       email,
       password: hash,
     }))
@@ -56,8 +37,6 @@ module.exports.createUser = (req, res, next) => {
       res.send({
         _id: user._id,
         name: user.name,
-        about: user.about,
-        avatar: user.avatar,
         email: user.email,
       });
     })
@@ -73,13 +52,13 @@ module.exports.createUser = (req, res, next) => {
 
 module.exports.updateUserData = (req, res, next) => {
   const userId = req.user._id;
-  const { name, about } = req.body;
+  const { name, email } = req.body;
   console.log('id user: ', req.user._id);
   User.findByIdAndUpdate(
     userId,
     {
       name,
-      about,
+      email,
     },
     {
       new: true,
@@ -94,23 +73,6 @@ module.exports.updateUserData = (req, res, next) => {
     })
     .catch(next);
 };
-
-// module.exports.updateUserAvatar = (req, res, next) => {
-//   const userId = req.user._id;
-//   const { avatar } = req.body;
-
-//   User.findByIdAndUpdate(
-//     userId,
-//     { avatar },
-//     {
-//       new: true,
-//       runValidators: true,
-//       upsert: true,
-//     },
-//   )
-//     .then((user) => res.status(200).send(user))
-//     .catch(next);
-// };
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
