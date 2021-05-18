@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-/* eslint-disable no-console */
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
@@ -32,7 +30,7 @@ module.exports.createUser = (req, res, next) => {
     .then((({ _id }) => User.findById(_id)))
     .then((newUser) => res
       .status(200)
-      .send({ success: true, message: `Пользователь ${newUser.email} успешно создан` }))
+      .send({ message: `Пользователь ${newUser.email} успешно создан` }))
     .then((user) => {
       res.send({
         _id: user._id,
@@ -53,7 +51,7 @@ module.exports.createUser = (req, res, next) => {
 module.exports.updateUserData = (req, res, next) => {
   const userId = req.user._id;
   const { name, email } = req.body;
-  console.log('id user: ', req.user._id);
+  // console.log('id user: ', req.user._id);
   User.findByIdAndUpdate(
     userId,
     {
@@ -61,13 +59,14 @@ module.exports.updateUserData = (req, res, next) => {
       email,
     },
     {
+      upsert: true,
       new: true,
       runValidators: true,
     },
   )
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err.name === 'ValidationError') {
         throw new BadRequestError('Данные пользователя не корректны');
       }
     })

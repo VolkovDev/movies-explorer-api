@@ -1,13 +1,10 @@
-/* eslint-disable no-undef */
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-shadow */
 const Movies = require('../models/movies');
 const NotFoundError = require('../errors/NotFoundError');
 const ForbiddenError = require('../errors/ForbiddenError');
 const BadRequestError = require('../errors/BadRequestError');
 
 module.exports.getMovies = (req, res, next) => {
-  Movie.find({})
+  Movies.find({})
     .then((movies) => res.send(movies))
     .catch(next);
 };
@@ -27,7 +24,7 @@ module.exports.createMovie = (req, res, next) => {
     nameEN,
   } = req.body;
 
-  Movie.create({
+  Movies.create({
     country,
     director,
     duration,
@@ -55,24 +52,15 @@ module.exports.createMovie = (req, res, next) => {
 module.exports.deleteMovie = (req, res, next) => {
   const { movieId } = req.params;
   Movies.findById(movieId)
-    .orFail(() => {
-      throw new NotFoundError('Карточка с указанным movieId не найдена!');
-    })
     .then((movie) => {
-      if (movie.owner._id.toString() === req.user._id) {
-        Movies.findById(movieId)
-          .findByIdAndRemove(movieId)
-          .then((movie) => res.send(movie))
-          .catch((err) => {
-            if (err.name === 'CastError') {
-              throw new BadRequestError('Переданы некорректные данные');
-            }
-          })
-          .catch(next);
+      if (!movie) {
+        throw new NotFoundError('Фильм с указанным movieId не найдена!');
+      } else if (movie.owner.toString() !== req.user._id.toString()) {
+        throw new ForbiddenError('Недостаточно прав для удаления фильма');
       } else {
-        throw new ForbiddenError('Недостаточно прав для удаления карточки');
+        return Movies.findByIdAndRemove(movieId)
+          .then(() => res.send({ message: 'Фильм удалён' }));
       }
-      return res.status(200).send({ message: 'Карточка удалена' });
     })
     .catch(next);
 };

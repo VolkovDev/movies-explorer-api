@@ -1,5 +1,3 @@
-/* eslint-disable import/extensions */
-/* eslint-disable no-console */
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -10,8 +8,9 @@ const cors = require('cors');
 const { errors } = require('celebrate');
 const { CelebrateError } = require('./middlewares/celebrate');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-// const auth = require('./middlewares/auth');
-const NotFoundError = require('./errors/NotFoundError');
+const auth = require('./middlewares/auth');
+const router = require('./routes');
+// const NotFoundError = require('./errors/NotFoundError');
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -26,6 +25,7 @@ const app = express();
 
 app.use(cors());
 
+app.use(requestLogger);
 //  apply to all requests
 app.use(limiter);
 
@@ -39,8 +39,6 @@ app.use(cookieParser());
 
 app.use(helmet());
 
-// app.use(auth);
-
 mongoose.connect('mongodb://localhost:27017/bitfilmsdb', {
   useNewUrlParser: true,
   useCreateIndex: true,
@@ -48,28 +46,32 @@ mongoose.connect('mongodb://localhost:27017/bitfilmsdb', {
   useFindAndModify: false,
 });
 
-app.use(requestLogger);
-
 app.get('/crash-test', () => {
   setTimeout(() => {
     throw new Error('Сервер сейчас упадёт');
   }, 0);
 });
 
-const usersRouter = require('./routes/user').router;
-const movieRouter = require('./routes/movies').router;
+// const usersRouter = require('./routes/user').router;
+// const movieRouter = require('./routes/movies').router;
 
-app.use(usersRouter);
+// app.use(usersRouter);
 
-app.use(movieRouter);
+// app.use(movieRouter);
 
-app.use('*', () => {
-  throw new NotFoundError('Запрашиваемый ресурс не найден');
-});
+// app.use('*', () => {
+//   throw new NotFoundError('Запрашиваемый ресурс не найден');
+// });
 
 // app.use((req) => {
 //   throw new NotFoundError(`По адресу ${req.path} ничего нет`);
 // });
+
+app.use(require('./routes/authorisation'));
+
+app.use(auth);
+
+app.use(router);
 
 app.use(errorLogger);
 
@@ -79,5 +81,5 @@ app.use(errors());
 
 app.listen(PORT, () => {
   // Если всё работает, консоль покажет, какой порт приложение слушает
-  console.log(`App listening on port: ${PORT}`);
+  // console.log(`All fine! App listening on port: ${PORT}`);
 });

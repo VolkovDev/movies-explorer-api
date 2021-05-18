@@ -39,12 +39,6 @@ module.exports.validateMovie = celebrate({
   }).unknown(true),
 });
 
-module.exports.validationDeleteMovie = celebrate({
-  params: Joi.object().keys({
-    movieId: Joi.string().required().length(24).hex(),
-  }).unknown(true),
-});
-
 module.exports.validationSigIn = celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email()
@@ -71,6 +65,12 @@ module.exports.validationUser = celebrate({
       .error(new Joi.ValidationError('Неправильное имя')),
     email: Joi.string().required().email()
       .error(new Joi.ValidationError('Неверный  Email')),
+  }).unknown(true),
+});
+
+module.exports.validationDeleteMovie = celebrate({
+  params: Joi.object().keys({
+    movieId: Joi.string().required().length(24).hex(),
   }).unknown(true),
 });
 

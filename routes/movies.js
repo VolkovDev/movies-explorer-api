@@ -1,6 +1,5 @@
-/* eslint-disable import/extensions */
 const router = require('express').Router();
-const auth = require('../middlewares/auth');
+// cons = require('../middleware');
 const {
   getMovies,
   createMovie,
@@ -11,12 +10,10 @@ const {
   validationDeleteMovie,
 } = require('../middlewares/celebrate');
 
-router.get('/movies', auth, getMovies);
+router.get('/movies', getMovies);
 
-router.post('/movies', auth, validateMovie, createMovie);
+router.post('/movies', validateMovie, createMovie);
 
-router.delete('/movies/:movieId ', auth, validationDeleteMovie, deleteMovie);
+router.delete('/movies/:movieId', validationDeleteMovie, deleteMovie);
 
-module.exports = {
-  router,
-};
+module.exports = router;

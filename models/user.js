@@ -1,4 +1,3 @@
-/* eslint-disable func-names */
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 // const validator = require('validator');
@@ -10,7 +9,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     minlength: 2,
     maxlength: 30,
-    default: 'Жак-Ив Кусто',
+    required: true,
   },
   email: {
     type: String,
@@ -28,7 +27,7 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-userSchema.statics.findUserByCredentials = function (email, password) {
+userSchema.statics.findUserByCredentials = function find(email, password) {
   return this.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
